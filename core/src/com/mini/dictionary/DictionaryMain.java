@@ -20,14 +20,14 @@ public class DictionaryMain extends ApplicationAdapter {
 	@Override
 	/** 渲染图像*/
 	public void render () {
-		Gdx.gl.glClearColor(255, 255, 255, 1); // 设置背景色
+		Gdx.gl.glClearColor(1, 1, 1, 0xff/255.0f); // 设置背景色
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // 清屏
-
 		dictionaryRender.render();
 	}
 
 	@Override
     /** 释放资源*/
 	public void dispose () {
+		dictionaryRender.dispose();
 	}
 }
