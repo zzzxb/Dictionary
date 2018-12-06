@@ -1,16 +1,16 @@
-package com.mini.dictionary.ui;
+package com.mini.dictionary.ui.layout;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class DictionaryLayout {
     private Stage stage;
-    private SelectionMenu selectionMenu;
+    private OptionMenu selectionMenu;
 
     public DictionaryLayout(){
         stage = new Stage(); // 创建舞台
         Gdx.input.setInputProcessor(stage); // 输入响应
-        selectionMenu = new SelectionMenu(stage);
+        selectionMenu = new OptionMenu(stage);
         init();
     }
 
@@ -21,12 +21,10 @@ public class DictionaryLayout {
     public void render() {
         stage.act(); // 更新舞台逻辑
         stage.draw(); // 绘制舞台
-        selectionMenu.event();
+        selectionMenu.buttonEvent(); // 选择菜单
     }
 
     public void dispose() {
-        if (stage != null)
-            stage.dispose();
-        selectionMenu.dispose();
+        stage.dispose();
     }
 }

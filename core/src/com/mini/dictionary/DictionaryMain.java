@@ -3,7 +3,7 @@ package com.mini.dictionary;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.mini.dictionary.ui.DictionaryLayout;
+import com.mini.dictionary.ui.layout.DictionaryLayout;
 import com.mini.dictionary.ui.DictionaryRender;
 
 public class DictionaryMain extends ApplicationAdapter {

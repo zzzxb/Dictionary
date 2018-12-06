@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
+import com.mini.dictionary.ui.layout.DictionaryLayout;
 
 public class DictionaryRender implements Disposable {
     private DictionaryLayout dictionaryLayout;
