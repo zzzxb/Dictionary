@@ -45,7 +45,7 @@ public class OptionMenu {
     }
 
     public void buttonEvent () {
-        // 先缕缕思路，明天再写
+        // 先缕缕思路，明天再写 (默认选项待添加,改变页待添加)
         for (ImageTextButton itb : buttonGroup)
             buttonChecked(itb);
 
