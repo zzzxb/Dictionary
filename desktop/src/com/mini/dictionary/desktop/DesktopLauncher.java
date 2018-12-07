@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.addIcon("icon/appicon.png", Files.FileType.Internal);
 		config.width = 820; // 窗口宽度
 		config.height = 580; // 窗口高度
+        config.resizable = false; // 禁止窗口最大化
 		new LwjglApplication(new DictionaryMain(), config);
 	}
 }

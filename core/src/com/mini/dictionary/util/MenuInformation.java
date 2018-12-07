@@ -1,16 +1,18 @@
 package com.mini.dictionary.util;
 
-public class MenInformation {
+public class MenuInformation {
     // 菜单的位置
-    public static final int FRAMEHEIGHT = 430; // 跟左上角图大小有关
+    public static final int FRAMEHEIGHT = 430; // 跟hint.png图片高度有关
     public static final int BUTTONHEIGHT = 45; // 跟select.png图片的高度相同
-    // 按钮开关
+    // 按钮开关 true为启用按钮，反之
     public static final boolean OPENBUTTON[] = {true,true,true,true,true,true,true};
+    // 默认选项
+    public static int defaultOptionOn = 0; // 默认选中按钮 0 - 5 其中一个
     // 设置选项的按钮位置
     public static final int SETTINGBUTTONPOSITION[] = {10,10};
-    // 按钮1-6 的显示文本
+    // 按钮0-5 的显示文本
     public static final String BUTTONTEXT[] = {"查单词","背单词","3","4","5","6"};
-    // 按钮1-6的按钮以及设置按钮的纹理路径
+    // 按钮0-6的按钮以及设置按钮的纹理路径
     public static final String BUTTONONEPATH[] = {"icon/dict.png","icon/dict-hover.png", "icon/select.png"};
     public static final String BUTTONTWOPATH[] = {"icon/wb.png","icon/wb-hover.png", "icon/select.png"};
     public static final String BUTTONTHREEPATH[] = {"icon/wb.png","icon/wb-hover.png", "icon/select.png"};

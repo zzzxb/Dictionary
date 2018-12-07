@@ -30,8 +30,8 @@ public class DictionaryRender implements Disposable {
 
     public void renderTestObject() {
         batch.begin();
-        batch.draw(menuTexture,0,0,150,580);
-        batch.draw(hintTexture,0,430,150,150);
+        batch.draw(menuTexture,0,0,150,580); // 更改菜单灰色块的位置和大小
+        batch.draw(hintTexture,0,430,150,150); // 更改菜单蓝色块的位置和大小
         batch.end();
         dictionaryLayout.render();
     }
