@@ -20,4 +20,9 @@ public class OptionThreePage implements OptionPageDao {
     public void addToStage() {
 
     }
+
+    @Override
+    public void showMessage() {
+
+    }
 }

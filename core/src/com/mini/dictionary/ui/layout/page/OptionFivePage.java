@@ -20,4 +20,9 @@ public class OptionFivePage implements OptionPageDao {
     public void addToStage() {
 
     }
+
+    @Override
+    public void showMessage() {
+
+    }
 }

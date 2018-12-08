@@ -19,4 +19,9 @@ public class OptionFourPage implements OptionPageDao {
     public void addToStage() {
 
     }
+
+    @Override
+    public void showMessage() {
+
+    }
 }

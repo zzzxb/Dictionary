@@ -58,6 +58,10 @@ public class ButtonFramework implements Disposable {
                 Gdx.files.internal(buttonMessage.getFontPngPath()),false);
     }
 
+    public void setFont(BitmapFont font) {
+        this.font = buttonMessage.setFont(font);
+    }
+
     /** 设置按钮纹理 */
     public void setTextures() {
         if (buttonMessage.getUpTexturePath() != null)
