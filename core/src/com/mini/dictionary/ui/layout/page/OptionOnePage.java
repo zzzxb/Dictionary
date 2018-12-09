@@ -78,7 +78,6 @@ public class OptionOnePage implements OptionPageDao, Disposable {
 //        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ||
 //                Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) ||
 //                queryButton.isChecked() ) {
-//            queryButton.setChecked(false);
 //        }
         if (searchBox.getText() != null || searchBox.getText() != "")
             if (searchBox.getText().toLowerCase().equals("happy"))
@@ -91,6 +90,7 @@ public class OptionOnePage implements OptionPageDao, Disposable {
                 label.setText("大丑逼");
             else
                 label.setText(searchBox.getText());
+        queryButton.setChecked(false);
     }
 
     /** 光标*/

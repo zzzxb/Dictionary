@@ -86,6 +86,8 @@ public class OptionMenu {
         }
         if (itb.isChecked() && itb == buttonOne)
             optionOnePage.showMessage();
+        if (itb.isChecked() && itb == buttonTwo)
+            optionTwoPage.showMessage();
     }
 
     /** 默认选项 - 打开软件默认选中一个按钮 */
