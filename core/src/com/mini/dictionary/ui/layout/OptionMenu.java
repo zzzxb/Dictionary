@@ -32,6 +32,7 @@ public class OptionMenu {
     private OptionPageDao optionFivePage;
     private OptionPageDao optionSixPage;
     private OptionPageDao optionSettingPage;
+    private Boolean buttonClick = true; // 按钮点击标志
 
     public OptionMenu(Stage stage) {
         this.stage = stage;
@@ -66,9 +67,7 @@ public class OptionMenu {
 
     /** 改变页,点击不同的按钮显示不同的页面 */
     public void changePage (ImageTextButton itb) {
-        if (itb.isChecked()) {
-            stage.clear();
-            readdButtonToStage();
+        if (itb.isChecked() && buttonClick) { // 如果按钮被点击则刷新页面
             if (itb == buttonOne)
                 optionOnePage.addToStage();
             else if (itb == buttonTwo)
@@ -83,7 +82,12 @@ public class OptionMenu {
                 optionSixPage.addToStage();
             else if (itb == settingButton)
                 optionSettingPage.addToStage();
+            buttonClick = false;
         }
+        if (itb.isChecked() && itb == buttonOne)
+            optionOnePage.showMessage();
+        if (itb.isChecked() && itb == buttonTwo)
+            optionTwoPage.showMessage();
     }
 
     /** 默认选项 - 打开软件默认选中一个按钮 */
@@ -98,6 +102,9 @@ public class OptionMenu {
     /** Button选中效果- ButtonGroup中只能有一个被选中 */
     public void buttonChecked(ImageTextButton itb) {
         if (itb.isPressed()) {
+            buttonClick = true;  // 如果按钮被点击标志为true
+            stage.clear();
+            readdButtonToStage();
             changePage(itb);
             itb.setChecked(true);
             itb.setDisabled(true);

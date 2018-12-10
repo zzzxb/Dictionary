@@ -1,5 +1,7 @@
 package com.mini.dictionary.ui.button.entity;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+
 public class ButtonInformation {
     private String text;
     private String upTexturePath; // 抬起纹理
@@ -11,6 +13,10 @@ public class ButtonInformation {
     public void setFontFilePath(String fontFntPath, String fontPngPath) {
         this.fontFntPath = fontFntPath;
         this.fontPngPath = fontPngPath;
+    }
+
+    public BitmapFont setFont(BitmapFont font) {
+        return font;
     }
 
     public String getFontFntPath() {
