@@ -4,7 +4,6 @@ sourceCompatibility = 1.6
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.mian.resources.srcDirs = ["src/mian/java","src/main/resources"]
 
 eclipse.project {
     name = appName + "-core"
