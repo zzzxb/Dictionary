@@ -11,7 +11,7 @@ public class DictionaryMain extends ApplicationAdapter {
 	private DictionaryRender dictionaryRender;
 
 	@Override
-	/** 用于初始化1*/
+	/** 用于初始化*/
 	public void create () {
 		dictionaryLayout = new DictionaryLayout();
 		dictionaryRender = new DictionaryRender(dictionaryLayout);

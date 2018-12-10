@@ -9,10 +9,6 @@ buildscript {
         jcenter()
         google()
     }
-    dependencies {
-        
-
-    }
 }
 
 allprojects {

@@ -1,4 +1,4 @@
 package com.mini.dictionary.dao;
 
-public class DictionaryDao {
+public interface WordTypeDaoInf {
 }

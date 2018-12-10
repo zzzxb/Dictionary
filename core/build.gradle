@@ -4,8 +4,14 @@ sourceCompatibility = 1.6
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = [ "src/" ]
-
+sourceSets.mian.resources.srcDirs = ["src/mian/java","src/main/resources"]
 
 eclipse.project {
     name = appName + "-core"
 }
+
+dependencies{
+    compile group:'org.mybatis', name:'mybatis',version:'3.4.6';
+    compile group:'mysql',name:'mysql-connector-java',version:'8.0.13';
+}
+
