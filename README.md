@@ -15,10 +15,12 @@
 6. 2018-12-9号 背单词功能差不多了，明天设置界面，后天稍微重构一下. -- Zzzxb
 7. 2018-12-11号 采用libgdx写个界面真闹心,mybatis找不到路径,用JDBC吧. -- Zzzxb
 8. 2018-12-12好 Gradle路径问题已经修复，继续使用MyBatis，是真滴麻烦。--Sdh
-8. 2018-12-13号 采用json能查找1000多个单词了，显示7天的每日一句,等有时间了再改吧
+9. 2018-12-13号 采用json能查找1000多个单词了，显示7天的每日一句,等有时间了再改吧
+10. 2018-12-13号 忘了更新项目了，刚写的东西完美丢失，没办法只能重写一遍了.更改仓库长传到我fork的仓库了，
+mybatis在我电脑上用不成,我也打不开项目，等需要的时候我提交下分支就行了. -- Zzzxb
 #### **不完整Demo结束日期:2018-12-13号** -- Zzzxb
 
 * 初次用libgdx写东西不知道该怎么写单词软件，本来想从数据库中查找的可是路径总是不对。
 知识或应对方法了再好好写东西，不然东拼西凑的，根豆腐渣工程一样。一戳就塌方了。
-![1](assets/1.png)
-![2](assets/2.png)
+![1](https://github.com/ssssdh/Dictionary/blob/master/core/assets/1.png)
+![2](https://github.com/ssssdh/Dictionary/blob/master/core/assets/2.png)
