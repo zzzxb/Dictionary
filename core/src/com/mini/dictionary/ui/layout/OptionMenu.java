@@ -1,12 +1,16 @@
 package com.mini.dictionary.ui.layout;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.*;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.mini.dictionary.util.MenuInformation.*;
@@ -34,12 +38,17 @@ public class OptionMenu {
     private OptionPageDao optionSettingPage;
     private Boolean buttonClick = true; // 按钮点击标志
 
+    private BitmapFont font;
+    private Label datelabel;
+    private Date date;
+
     public OptionMenu(Stage stage) {
         this.stage = stage;
         init();
     }
 
     public void init() {
+        dateShow();
         buttonGroup = new ArrayList<ImageTextButton>();
         for (int i = 0; i <= 6 ; i++) {
             if (OPENBUTTON[i]) // 只有打开按钮显示的才能被实例化和添加到buttonGroup
@@ -53,6 +62,31 @@ public class OptionMenu {
                     case 6 : createSettingButton(); buttonGroup.add(settingButton);break;
                 }
         }
+    }
+
+    /**  时间显示*/
+    public void dateShow() {
+        String dateString = "";
+        date = new Date();
+        font = new BitmapFont(Gdx.files.internal("font/dateFont.fnt")
+                ,Gdx.files.internal("font/dateFont.png"),false);
+        switch(date.getMonth() + 1) {
+            case 1: dateString = "Jan." ;break;
+            case 2: dateString = "Feb." ;break;
+            case 3: dateString = "Mar." ;break;
+            case 4: dateString = "Apr." ;break;
+            case 5: dateString = "May." ;break;
+            case 6: dateString = "June." ;break;
+            case 7: dateString = "Jul." ;break;
+            case 8: dateString = "Aug." ;break;
+            case 9: dateString = "Sep." ;break;
+            case 10: dateString = "Oct." ;break;
+            case 11: dateString = "Nov." ;break;
+            case 12: dateString = "Dec." ;break;
+        }
+        datelabel = new Label( dateString , new Label.LabelStyle(font,null));
+        datelabel.setPosition(30,490);
+        stage.addActor(datelabel);
     }
 
     /** 菜单按钮事件*/
@@ -204,5 +238,6 @@ public class OptionMenu {
         for (ImageTextButton itb: buttonGroup) {
             stage.addActor(itb);
         }
+        stage.addActor(datelabel);
     }
 }

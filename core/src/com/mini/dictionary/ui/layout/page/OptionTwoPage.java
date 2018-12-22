@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
+import com.mini.dictionary.WordJson;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
 
@@ -36,11 +37,9 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     private Sound wordSound;
 
     private Label wordLabel;
-    private Label explainLabel;
-    private String word[] = {"Memory","Happy","Duang"};
-    private String wordExplain[] = {"n. 内存; 记忆", "adj. 幸福的; 高兴的;","你是猪"};
     private int count = 0;
-    private int count1 = 0;
+    private WordJson wordJson;
+    private int length;
 
     public OptionTwoPage(Stage stage) {
         this.stage = stage;
@@ -49,6 +48,8 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
 
     @Override
     public void init() {
+        wordJson = new WordJson();
+        length = Integer.parseInt(wordJson.init("",3,0)) - 8;
         font18 = new BitmapFont(Gdx.files.internal("font/font18.fnt"),
                 Gdx.files.internal("font/font18.png"),false);
         font28 = new BitmapFont(Gdx.files.internal("font/myfont.fnt"),
@@ -56,7 +57,6 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
 
         wordCardTexture = new Texture(Gdx.files.internal("icon/wordcard.png"));
         wordLabel = new Label("", new Label.LabelStyle(font28, null));
-        explainLabel = new Label("", new Label.LabelStyle(font18, null));
         wordCardImage = new Image(wordCardTexture);
 
         createWordCardBoxAndWordLabel();
@@ -112,7 +112,6 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     public void createWordCardBoxAndWordLabel() {
         wordCardImage.setPosition(280,100); // 单词卡背景图显示位置
         wordLabel.setPosition(300,400); // 单词卡单词显示位置
-        explainLabel.setPosition(300, 360); // 单词解释显示位置
     }
 
     /** 进度条 */
@@ -146,15 +145,10 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     public void addToStage() {
         stage.addActor(wordCardImage);
         stage.addActor(wordLabel);
-        stage.addActor(explainLabel);
-        if (count1 >= word.length) {
-            stage.addActor(backButton);
-            stage.addActor(forWardButton);
-        }
-        else {
-            stage.addActor(knowButton);
-            stage.addActor(notKnowButton);
-        }
+        stage.addActor(backButton);
+        stage.addActor(forWardButton);
+        stage.addActor(knowButton);
+        stage.addActor(notKnowButton);
         stage.addActor(progressNotKnow);
         stage.addActor(progressKnow);
         stage.addActor(progressBox);
@@ -164,26 +158,24 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     /** 有事件触发才被调用*/
     @Override
     public void showMessage() {
+        String word = wordJson.init("",2, count);
         if (backButton.isChecked()) { // 向前翻页
-            count--;
-            backButton.setChecked(false);
+            count--; backButton.setChecked(false);
         }
         else if (forWardButton.isChecked()){ // 向后翻页
-            count++;
-            forWardButton.setChecked(false);
+            count++; forWardButton.setChecked(false);
         }
         else if (knowButton.isChecked()) {
-            count1++;
-            count++;
-            knowButton.setChecked(false);
+            count++; knowButton.setChecked(false);
         }
         else if (notKnowButton.isChecked()) {
-            notKnowButton.setChecked(false);
+            count++; notKnowButton.setChecked(false);
         }
         else if (playSound.isChecked()) {
             playSound.setChecked(false);
             try{
-                wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/"+ word[count].toLowerCase() +".mp3"));
+                // 这里word返回的是解释，所以查找音频文件有有问题
+                wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/"+word.toLowerCase() +".mp3"));
             }catch (Exception e) {
                 wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/noSound.mp3"));
             }
@@ -191,14 +183,13 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         }
 
         count = count < 0 ? 0 : count;
-        count = count >= word.length ? word.length-1 : count;
+        count = count >= length ? length-1 : count;
 
         // 显示单词
-        wordLabel.setText(word[count] + "\n\n");
-        explainLabel.setText(wordExplain[count]);
+        wordLabel.setText(word + "\n\n");
         // 进度条显示
-        if (count1 <= word.length)
-            progressKnow.setWidth(count1 * (400 / word.length));
+        if (count <= length)
+            progressKnow.setWidth(count * (400 / length));
     }
 
     @Override

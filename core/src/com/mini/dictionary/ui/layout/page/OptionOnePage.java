@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
+import com.mini.dictionary.WordJson;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
 
@@ -31,6 +32,7 @@ public class OptionOnePage implements OptionPageDao, Disposable {
 
     private ButtonFramework query;
     private ImageTextButton queryButton;
+    private WordJson wordJson;
 
     public OptionOnePage(Stage stage) {
         this.stage = stage;
@@ -40,6 +42,7 @@ public class OptionOnePage implements OptionPageDao, Disposable {
     @Override
     public void init() {
         date = new Date(); // 在哪放个日期
+        wordJson = new WordJson();
         font = new BitmapFont(Gdx.files.internal("font/font18.fnt"),
                 Gdx.files.internal("font/font18.png"),false);
         label = new Label("",new Label.LabelStyle(font,null));
@@ -75,21 +78,11 @@ public class OptionOnePage implements OptionPageDao, Disposable {
     }
 
     public void showMessage() {
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ||
-//                Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) ||
-//                queryButton.isChecked() ) {
-//        }
-        if (searchBox.getText() != null || searchBox.getText() != "")
-            if (searchBox.getText().toLowerCase().equals("happy"))
-                label.setText("adj. 高兴的; 愉快的; 开心的;");
-            else if (searchBox.getText().toLowerCase().equals("memory"))
-                label.setText("n. 记忆,记忆力;内存,[计]存储器,回忆;");
-            else if (searchBox.getText().equals("赵鹏"))
-                label.setText("大帅哥");
-            else if (searchBox.getText().equals("慎东海"))
-                label.setText("大丑逼");
-            else
-                label.setText(searchBox.getText());
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ||
+                Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) ||
+                queryButton.isChecked() ) {
+            label.setText(wordJson.init(searchBox.getText(),1,0));
+        }
         queryButton.setChecked(false);
     }
 
@@ -112,8 +105,7 @@ public class OptionOnePage implements OptionPageDao, Disposable {
     }
     /** 每日一句信息*/
     public void dailySentenceMessage() {
-        dailySentenceLabel = new Label("No one can make you feel inferior without your consent.\n" +
-                "\n未经你的许可,没有人可以让你觉得低人一等.",new Label.LabelStyle(font,null));
+        dailySentenceLabel = new Label(wordJson.init(date.getDay() + "&Zzzxb&SDH",1,0),new Label.LabelStyle(font,null));
         dailySentenceLabel.setPosition(220,120);
     }
 
