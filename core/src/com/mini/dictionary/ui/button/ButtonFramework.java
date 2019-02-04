@@ -78,11 +78,8 @@ public class ButtonFramework implements Disposable {
     /** 释放资源 */
     @Override
     public void dispose () {
-        if (upTexture != null)
             upTexture.dispose();
-        if (overTexture != null)
             overTexture.dispose();
-        if (downTexture != null)
             downTexture.dispose();
     }
 }

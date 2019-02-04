@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.*;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
+import com.mini.dictionary.util.LoadFile;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +39,6 @@ public class OptionMenu {
     private OptionPageDao optionSettingPage;
     private Boolean buttonClick = true; // 按钮点击标志
 
-    private BitmapFont font;
     private Label datelabel;
     private Date date;
 
@@ -68,8 +68,6 @@ public class OptionMenu {
     public void dateShow() {
         String dateString = "";
         date = new Date();
-        font = new BitmapFont(Gdx.files.internal("font/dateFont.fnt")
-                ,Gdx.files.internal("font/dateFont.png"),false);
         switch(date.getMonth() + 1) {
             case 1: dateString = "Jan." ;break;
             case 2: dateString = "Feb." ;break;
@@ -84,7 +82,7 @@ public class OptionMenu {
             case 11: dateString = "Nov." ;break;
             case 12: dateString = "Dec." ;break;
         }
-        datelabel = new Label( dateString , new Label.LabelStyle(font,null));
+        datelabel = new Label( dateString , new Label.LabelStyle(LoadFile.getDateFont(),null));
         datelabel.setPosition(30,490);
         stage.addActor(datelabel);
     }
@@ -122,6 +120,8 @@ public class OptionMenu {
             optionOnePage.showMessage();
         if (itb.isChecked() && itb == buttonTwo)
             optionTwoPage.showMessage();
+        if (itb.isChecked() && itb == settingButton)
+            optionSettingPage.showMessage();
     }
 
     /** 默认选项 - 打开软件默认选中一个按钮 */

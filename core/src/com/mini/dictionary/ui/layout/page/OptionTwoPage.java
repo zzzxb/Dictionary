@@ -1,9 +1,5 @@
 package com.mini.dictionary.ui.layout.page;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -12,18 +8,13 @@ import com.badlogic.gdx.utils.Disposable;
 import com.mini.dictionary.WordJson;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
+import com.mini.dictionary.util.LoadFile;
 
 import java.io.IOException;
 
 public class OptionTwoPage implements OptionPageDao, Disposable {
     private Stage stage;
 
-    private BitmapFont font18;
-    private BitmapFont font28;
-    private Texture wordCardTexture;
-    private Texture progress;
-    private Texture progress1;
-    private Texture progress2;
     private Image wordCardImage;
     private Image progressBox;
     private Image progressKnow;
@@ -35,7 +26,8 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     private ImageTextButton notKnowButton;
     private ImageTextButton playSound;
 
-    private Sound wordSound;
+//    private Sound wordSound;
+    private String word;
 
     private Label wordLabel;
     private int count = 0;
@@ -51,14 +43,8 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     public void init() {
         wordJson = new WordJson();
         length = Integer.parseInt(wordJson.init("",3,0)) - 8;
-        font18 = new BitmapFont(Gdx.files.internal("font/font18.fnt"),
-                Gdx.files.internal("font/font18.png"),false);
-        font28 = new BitmapFont(Gdx.files.internal("font/myfont.fnt"),
-                Gdx.files.internal("font/myfont.png"),false);
-
-        wordCardTexture = new Texture(Gdx.files.internal("icon/wordcard.png"));
-        wordLabel = new Label("", new Label.LabelStyle(font28, null));
-        wordCardImage = new Image(wordCardTexture);
+        wordLabel = new Label("", new Label.LabelStyle(LoadFile.getFont18(), null));
+        wordCardImage = new Image(LoadFile.getWordCardTexture());
 
         createWordCardBoxAndWordLabel();
         createBackButton();
@@ -74,7 +60,7 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         ButtonFramework buttonFramework= new ButtonFramework();
         buttonFramework.buttonMessage.setTexturePath("icon/back-disabled.png"
                 ,"icon/back-hover.png", null);
-        buttonFramework.buttonMessage.setFont(font18);
+        buttonFramework.buttonMessage.setFont(LoadFile.getFont18());
         buttonFramework.buttonMessage.setAxis(200, 300);
         backButton = buttonFramework.createButton();
     }
@@ -84,7 +70,7 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         ButtonFramework buttonFramework= new ButtonFramework();
         buttonFramework.buttonMessage.setTexturePath("icon/forward-disabled.png",
                 "icon/forward-hover.png",null);
-        buttonFramework.buttonMessage.setFont(font18);
+        buttonFramework.buttonMessage.setFont(LoadFile.getFont18());
         buttonFramework.buttonMessage.setAxis(710,300);
         forWardButton = buttonFramework.createButton();
     }
@@ -94,7 +80,7 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         ButtonFramework buttonFramework= new ButtonFramework();
         buttonFramework.buttonMessage.setTexturePath("icon/know-disabled.png",
                 "icon/know-hover.png",null);
-        buttonFramework.buttonMessage.setFont(font18);
+        buttonFramework.buttonMessage.setFont(LoadFile.getFont18());
         buttonFramework.buttonMessage.setAxis(580,100);
         knowButton = buttonFramework.createButton();
     }
@@ -104,7 +90,7 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         ButtonFramework buttonFramework= new ButtonFramework();
         buttonFramework.buttonMessage.setTexturePath("icon/notknow-disabled.png",
                 "icon/notknow-hover.png",null);
-        buttonFramework.buttonMessage.setFont(font18);
+        buttonFramework.buttonMessage.setFont(LoadFile.getFont18());
         buttonFramework.buttonMessage.setAxis(280,100);
         notKnowButton = buttonFramework.createButton();
     }
@@ -117,12 +103,9 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
 
     /** 进度条 */
     public void createProgress() {
-        progress = new Texture(Gdx.files.internal("icon/progress.png"));
-        progress1 = new Texture(Gdx.files.internal("icon/progress1.png"));
-        progress2 = new Texture(Gdx.files.internal("icon/progress2.png"));
-        progressBox = new Image(progress);
-        progressKnow = new Image(progress1);
-        progressNotKnow = new Image(progress2);
+        progressBox = new Image(LoadFile.getProgress(0));
+        progressKnow = new Image(LoadFile.getProgress(1));
+        progressNotKnow = new Image(LoadFile.getProgress(2));
         progressBox.setPosition(280,520);
         progressKnow.setPosition(280,520);
         progressNotKnow.setPosition(280,520);
@@ -136,9 +119,8 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         ButtonFramework buttonFramework = new ButtonFramework();
         buttonFramework.buttonMessage.setTexturePath("icon/daily-pronounce.png",
                 "icon/daily-pronounce-hover.png",null);
-        buttonFramework.buttonMessage.setFont(font18);
-        buttonFramework.buttonMessage.setAxis(600,415);
         playSound = buttonFramework.createButton();
+        playSound.setPosition(600, 445);
     }
 
     /** Actor添加到舞台*/
@@ -159,7 +141,8 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     /** 有事件触发才被调用*/
     @Override
     public void showMessage() {
-        String word = wordJson.init("",2, count);
+        word = wordJson.init("",2, count);
+        wordLabel.setPosition(300,400); // 单词卡单词显示位置
         if (backButton.isChecked()) { // 向前翻页
             count--; backButton.setChecked(false);
         }
@@ -181,8 +164,9 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         else if (playSound.isChecked()) {
             playSound.setChecked(false);
             try{
-                // 这里word返回的是解释，所以查找音频文件有有问题
-//                wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/" + word.toLowerCase() + ".mp3"));
+                // 调用本地文件声音文件发音
+//              wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/" + word.toLowerCase() + ".mp3"));
+                // 调用百度语音合成接口发音
                 Runtime.getRuntime().exec("java -jar speech.jar " + word);
             }catch (Exception e) {
             }
@@ -201,10 +185,6 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
 
     @Override
     public void dispose() {
-        wordCardTexture.dispose();
-        progress.dispose();
-        progress1.dispose();
-        progress2.dispose();
-        wordSound.dispose();
+//        wordSound.dispose();
     }
 }
