@@ -25,8 +25,11 @@ mybatis在我电脑上用不成,我也打不开项目，等需要的时候我提
 所以这个就算做1.0版本吧。等学到足够的知识或应对方法了再好好写东西，不然东拼西凑的，
 跟豆腐渣工程一样，一戳就塌方了。以前学的东西没弄明白，现在回来重新自学一遍吧，
 把没学会没弄懂的再学学，学会的再沉淀一下。 -- Zzzxb
-![1](./core/assets/1.png)
-![2](./core/assets/2.png)
+
+当年(2018)那版的界面(图在上游仓库里, 那时候还是 32 位 dylib 才能跑的老版本):
+
+![1](https://raw.githubusercontent.com/dhshenc/Dictionary/master/core/assets/1.png)
+![2](https://raw.githubusercontent.com/dhshenc/Dictionary/master/core/assets/2.png)
 
 ---
 
