@@ -93,6 +93,11 @@ java -XstartOnFirstThread -jar desktop/build/libs/Dictionary-1.0.jar   # macOS �
      现在按设置里的"每日目标"从词库里抽一批词, 用当天日期当随机种子, 所以同一天抽到的
      永远是同一批、重启后进度条还对得上; 释义太长的词不会进卡片(按宽度折行 + 截断)。
 
+现在的样子(查单词 / 词库):
+
+![查单词](core/assets/1.png)
+![词库](core/assets/2.png)
+
 数据放在哪: 都用 libGDX 的 `Preferences` 存在本地(桌面端是用户目录下的 `.prefs/dictionary-study`),
 JSON 格式, 不开数据库也能记住生词本和学习记录, 重启软件数据还在。
 
