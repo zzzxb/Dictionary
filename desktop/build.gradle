@@ -1,55 +1,61 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.6
-sourceSets.main.java.srcDirs = [ "src/" ]
+// 编译目标定成 Java 8: 和 libGDX 自身的字节码版本一致, 这样不管用哪个 JDK 去跑 Gradle
+// (IDEA 里 project SDK 是 1.8, 终端默认是 21) 都不会再报 "无效的源发行版"
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-Xlint:-options' // 不想看 "source value 8 is obsolete" 的警告
+}
+
+sourceSets.main.java.srcDirs = ["src/"]
 
 project.ext.mainClassName = "com.mini.dictionary.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../core/assets");
+project.ext.assetsDir = new File("../core/assets")
 
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
+// macOS 上 GLFW(窗口库) 必须在进程的第一个线程启动, 否则报
+// "GLFW may only be used on the main thread ... Please run the JVM with -XstartOnFirstThread"
+def macJvmArgs = System.getProperty("os.name").toLowerCase().contains("mac") ? ['-XstartOnFirstThread'] : []
+
+// 运行: ./gradlew :desktop:run
+tasks.register('run', JavaExec) {
+    dependsOn classes
+    mainClass = project.mainClassName // Gradle 7 起 main 改名为 mainClass
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
     ignoreExitValue = true
+    jvmArgs = macJvmArgs
 }
 
-task debug(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
+// 调试启动: ./gradlew :desktop:debug 然后在 IDEA 里连 localhost:5005
+tasks.register('debug', JavaExec) {
+    dependsOn classes
+    mainClass = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
     ignoreExitValue = true
-    debug = true
+    jvmArgs = macJvmArgs + ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
 }
 
-task dist(type: Jar) {
-    from files(sourceSets.main.output.classesDir)
+// 打成可执行 jar: ./gradlew :desktop:dist  ->  desktop/build/libs/Dictionary-1.0.jar
+tasks.register('dist', Jar) {
+    dependsOn classes
+    archiveFileName = "${appName}-${version}.jar"
+    from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
- 
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from files(project.assetsDir)
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // 合并依赖后签名文件会让 JVM 拒绝启动
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class'
+
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
-}
-
-dist.dependsOn classes
-
-eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/core/assets'
-    }
-}
-
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
 }

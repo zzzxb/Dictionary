@@ -109,6 +109,9 @@ gradle-app.setting
 /ios/build/
 /ios-moe/build/
 
+## libGDX 运行期解压出来的原生库缓存(旧版 1.9.8 会往 assets 里放, 新版不会)
+/core/assets/.temp/
+
 ## OS Specific
 .DS_Store
 Thumbs.db

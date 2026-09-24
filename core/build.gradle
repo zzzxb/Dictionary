@@ -1,16 +1,20 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.6
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
-sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = ["src/com/mini/dictionary/mapper","src/com/mini/dictionary/resource"]
-eclipse.project {
-    name = appName + "-core"
+// 编译目标定成 Java 8: 和 libGDX 自身的字节码版本一致, 这样不管用哪个 JDK 去跑 Gradle
+// (IDEA 里 project SDK 是 1.8, 终端默认是 21) 都不会再报 "无效的源发行版"
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-dependencies{
-    compile group:'org.mybatis', name:'mybatis',version:'3.4.6';
-    compile group:'mysql',name:'mysql-connector-java',version:'8.0.13';
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-Xlint:-options' // 不想看 "source value 8 is obsolete" 的警告
 }
 
+sourceSets.main.java.srcDirs = ["src/"]
+sourceSets.main.resources.srcDirs = ["src/com/mini/dictionary/mapper", "src/com/mini/dictionary/resource"]
+
+dependencies {
+    implementation group: 'org.mybatis', name: 'mybatis', version: '3.4.6'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
+}
