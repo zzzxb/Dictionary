@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.mini.dictionary.ui.button.entity.ButtonInformation;
+import com.mini.dictionary.util.FontCache;
 
 /** 创建ImageTextButton的框架*/
 public class ButtonFramework implements Disposable {
@@ -52,10 +53,9 @@ public class ButtonFramework implements Disposable {
             style.checked = new TextureRegionDrawable(new TextureRegion(downTexture));
     }
 
-    /** 为按钮添加字体文件*/
+    /** 为按钮添加字体文件 - 改成走 FontCache, 同一种字体全局只加载一次 */
     public void setFont() {
-        font = new BitmapFont(Gdx.files.internal(buttonMessage.getFontFntPath()),
-                Gdx.files.internal(buttonMessage.getFontPngPath()),false);
+        font = FontCache.get(buttonMessage.getFontFntPath(), buttonMessage.getFontPngPath());
     }
 
     public void setFont(BitmapFont font) {

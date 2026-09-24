@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
+import com.mini.dictionary.util.StudyData;
 
 public class OptionTwoPage implements OptionPageDao, Disposable {
     private Stage stage;
@@ -175,9 +176,12 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         else if (knowButton.isChecked()) {
             count1++;
             count++;
+            StudyData.recordReview(true); // 新功能: 记一次学习统计
             knowButton.setChecked(false);
         }
         else if (notKnowButton.isChecked()) {
+            StudyData.recordReview(false);
+            StudyData.addToNotebook(word[count], wordExplain[count]); // 新功能: 不认识的自动进生词本
             notKnowButton.setChecked(false);
         }
         else if (playSound.isChecked()) {

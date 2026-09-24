@@ -2,6 +2,7 @@ package com.mini.dictionary.ui.layout;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.mini.dictionary.ui.UiKit;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.*;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
@@ -88,6 +89,26 @@ public class OptionMenu {
             optionOnePage.showMessage();
         if (itb.isChecked() && itb == buttonTwo)
             optionTwoPage.showMessage();
+        // 新加的页面靠 showMessage() 做每帧刷新(自动下一题/数据变了就重画)
+        if (itb.isChecked() && itb == buttonThree)
+            optionThreePage.showMessage();
+        if (itb.isChecked() && itb == buttonFour)
+            optionFourPage.showMessage();
+        if (itb.isChecked() && itb == buttonFive)
+            optionFivePage.showMessage();
+        if (itb.isChecked() && itb == buttonSix)
+            optionSixPage.showMessage();
+        if (itb.isChecked() && itb == settingButton)
+            optionSettingPage.showMessage();
+    }
+
+    /** 新功能按钮的小图标是用代码画出来的, 这里换掉 ButtonFramework 里的占位图 */
+    private void applyIcon(ImageTextButton button, String kind) {
+        if (button == null)
+            return;
+        button.getStyle().imageUp = UiKit.icon(kind);
+        button.getStyle().imageOver = UiKit.icon(kind);
+        button.getStyle().imageChecked = UiKit.icon(kind);
     }
 
     /** 默认选项 - 打开软件默认选中一个按钮 */
@@ -101,13 +122,17 @@ public class OptionMenu {
 
     /** Button选中效果- ButtonGroup中只能有一个被选中 */
     public void buttonChecked(ImageTextButton itb) {
-        if (itb.isPressed()) {
+        // 已经选中的按钮会被置为 disabled, 这里跳过它:
+        // 老代码在 stage.clear() 之后按钮的触摸焦点就丢了, 松手事件送不到, isPressed() 会一直为 true,
+        // 于是选中的按钮每帧都重复 clear/重建, 点别的按钮时两个按钮来回抢, 页面就再也切不过去。
+        if (itb.isPressed() && !itb.isDisabled()) {
             buttonClick = true;  // 如果按钮被点击标志为true
             stage.clear();
             readdButtonToStage();
             changePage(itb);
             itb.setChecked(true);
             itb.setDisabled(true);
+            itb.getClickListener().cancel(); // 结束这次按压, 免得 isPressed() 一直挂着
             for (ImageTextButton button : buttonGroup) {
                 if (button == itb)
                     continue;
@@ -150,6 +175,7 @@ public class OptionMenu {
         buttonFramework.buttonMessage.setFontFilePath(FONTPATH[0],FONTPATH[1]);
         buttonFramework.buttonMessage.setAxis(0,FRAMEHEIGHT - (3 * BUTTONHEIGHT));
         buttonThree = buttonFramework.createButton();
+        applyIcon(buttonThree, "book");
         stage.addActor(buttonThree);
     }
 
@@ -162,6 +188,7 @@ public class OptionMenu {
         buttonFramework.buttonMessage.setFontFilePath(FONTPATH[0],FONTPATH[1]);
         buttonFramework.buttonMessage.setAxis(0,FRAMEHEIGHT - (4 * BUTTONHEIGHT));
         buttonFour = buttonFramework.createButton();
+        applyIcon(buttonFour, "list");
         stage.addActor(buttonFour);
     }
 
@@ -174,6 +201,8 @@ public class OptionMenu {
         buttonFramework.buttonMessage.setFontFilePath(FONTPATH[0],FONTPATH[1]);
         buttonFramework.buttonMessage.setAxis(0,FRAMEHEIGHT - (5 * BUTTONHEIGHT));
         buttonFive = buttonFramework.createButton();
+        applyIcon(buttonFive, "check");
+        stage.addActor(buttonFive); // 原来这里忘了加进舞台, 5 号按钮一直显示不出来
     }
 
     /** 第六个按钮*/
@@ -185,6 +214,7 @@ public class OptionMenu {
         buttonFramework.buttonMessage.setFontFilePath(FONTPATH[0],FONTPATH[1]);
         buttonFramework.buttonMessage.setAxis(0,FRAMEHEIGHT - (6 * BUTTONHEIGHT));
         buttonSix = buttonFramework.createButton();
+        applyIcon(buttonSix, "chart");
         stage.addActor(buttonSix);
     }
 
