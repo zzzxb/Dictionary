@@ -122,9 +122,10 @@ public class OptionMenu {
 
     /** Button选中效果- ButtonGroup中只能有一个被选中 */
     public void buttonChecked(ImageTextButton itb) {
-        // 已经选中的按钮会被置为 disabled, 这里跳过它:
-        // 老代码在 stage.clear() 之后按钮的触摸焦点就丢了, 松手事件送不到, isPressed() 会一直为 true,
-        // 于是选中的按钮每帧都重复 clear/重建, 点别的按钮时两个按钮来回抢, 页面就再也切不过去。
+        // 选中的按钮会被置为 disabled, 这里跳过它, 顺便把"要恢复可点"的事情交给下面的循环:
+        // 老代码 stage.clear() 之后按钮的触摸焦点就丢了, 松手事件送不到, isPressed() 会一直为 true,
+        // 于是选中的按钮每帧都重复 clear/重建, 点别的按钮时两个按钮来回抢, 页面就再也切不过去;
+        // 但光跳过 disabled 也不行 - 不把其它按钮 setDisabled(false), 点过一次的按钮就再也回不去了。
         if (itb.isPressed() && !itb.isDisabled()) {
             buttonClick = true;  // 如果按钮被点击标志为true
             stage.clear();
@@ -136,8 +137,10 @@ public class OptionMenu {
             for (ImageTextButton button : buttonGroup) {
                 if (button == itb)
                     continue;
-                else
+                else {
                     button.setChecked(false);
+                    button.setDisabled(false); // 没选中的按钮要恢复可点, 不然点过一次就再也回不去了
+                }
             }
         }
     }
