@@ -1,5 +1,8 @@
 package com.mini.dictionary.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 文本处理小工具(新加的)。
  *
@@ -53,5 +56,60 @@ public final class TextUtil {
             return "0%";
         }
         return Math.round(part * 100f / total) + "%";
+    }
+
+    /** 中日韩字符按两个单位算宽度, 其它按一个(位图字体里全角字符差不多就是半角的两倍宽) */
+    private static boolean isWide(char c) {
+        return c >= 0x2E80;
+    }
+
+    /**
+     * 按显示宽度折行, 让释义能塞进单词卡/search 结果那种固定宽度的地方。
+     * 超过 maxLines 行就把最后一行结尾换成 ... , 免得文字溢出到别的控件上。
+     */
+    public static String wrap(String text, int unitsPerLine, int maxLines) {
+        String value = oneLine(text);
+        if (value.isEmpty() || unitsPerLine <= 0 || maxLines <= 0) {
+            return "";
+        }
+        List<String> lines = new ArrayList<String>();
+        StringBuilder line = new StringBuilder();
+        int units = 0;
+        int index = 0;
+        while (index < value.length()) {
+            char c = value.charAt(index);
+            int width = isWide(c) ? 2 : 1;
+            if (units + width > unitsPerLine) {
+                lines.add(line.toString().trim());
+                line.setLength(0);
+                units = 0;
+                if (lines.size() == maxLines) {
+                    break;
+                }
+                if (c == ' ') {
+                    index++;
+                    continue;
+                }
+            }
+            line.append(c);
+            units += width;
+            index++;
+        }
+        if (lines.size() < maxLines && line.length() > 0) {
+            lines.add(line.toString().trim());
+        }
+        if (index < value.length() && !lines.isEmpty()) {
+            int last = lines.size() - 1;
+            String tail = lines.get(last);
+            lines.set(last, (tail.length() > 2 ? tail.substring(0, tail.length() - 2) : tail) + "...");
+        }
+        StringBuilder result = new StringBuilder();
+        for (String item : lines) {
+            if (result.length() > 0) {
+                result.append('\n');
+            }
+            result.append(item);
+        }
+        return result.toString();
     }
 }

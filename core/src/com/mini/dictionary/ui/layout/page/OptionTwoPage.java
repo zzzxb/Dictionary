@@ -1,6 +1,5 @@
 package com.mini.dictionary.ui.layout.page;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +12,11 @@ import com.badlogic.gdx.utils.Disposable;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
 import com.mini.dictionary.util.StudyData;
+import com.mini.dictionary.util.TextUtil;
+import com.mini.dictionary.util.WordBank;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OptionTwoPage implements OptionPageDao, Disposable {
     private Stage stage;
@@ -38,8 +42,9 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
 
     private Label wordLabel;
     private Label explainLabel;
-    private String word[] = {"Memory","Happy","Duang"};
-    private String wordExplain[] = {"n. 内存; 记忆", "adj. 幸福的; 高兴的;","你是猪"};
+    // 词表改成从 character.json 里按"每日目标"抽, 不再是写死的三个词
+    private List<WordBank.Word> cards = new ArrayList<WordBank.Word>();
+    private int cardGoal = -1; // 已经按哪个目标抽过词了
     private int count = 0;
     private int count1 = 0;
 
@@ -67,6 +72,24 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         createNotKnowButton();
         createProgress();
         createSoundButton();
+        loadCards();
+    }
+
+    /** 按"每日目标"从词库里抽今天要背的词; 同一天抽到的是同一批, 重启后进度条还对得上 */
+    private void loadCards() {
+        cardGoal = StudyData.getDailyGoal();
+        cards = WordBank.dailyCards(cardGoal);
+        count = 0;
+        count1 = 0;
+    }
+
+    /** 当前这张卡, 下标越界时兜底 */
+    private WordBank.Word currentCard() {
+        if (cards.isEmpty()) {
+            return null;
+        }
+        int index = Math.max(0, Math.min(count, cards.size() - 1));
+        return cards.get(index);
     }
 
     /** 向前翻页按钮 */
@@ -145,10 +168,13 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
     /** Actor添加到舞台*/
     @Override
     public void addToStage() {
+        if (cardGoal != StudyData.getDailyGoal()) { // 设置里改了每日目标就重新抽词
+            loadCards();
+        }
         stage.addActor(wordCardImage);
         stage.addActor(wordLabel);
         stage.addActor(explainLabel);
-        if (count1 >= word.length) {
+        if (count1 >= cards.size()) {
             stage.addActor(backButton);
             stage.addActor(forWardButton);
         }
@@ -181,28 +207,40 @@ public class OptionTwoPage implements OptionPageDao, Disposable {
         }
         else if (notKnowButton.isChecked()) {
             StudyData.recordReview(false);
-            StudyData.addToNotebook(word[count], wordExplain[count]); // 新功能: 不认识的自动进生词本
+            WordBank.Word card = currentCard();
+            if (card != null) {
+                StudyData.addToNotebook(card.getWord(), card.getExplain()); // 新功能: 不认识的自动进生词本
+            }
             notKnowButton.setChecked(false);
         }
         else if (playSound.isChecked()) {
             playSound.setChecked(false);
-            try{
-                wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/"+ word[count].toLowerCase() +".mp3"));
-            }catch (Exception e) {
-                wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/noSound.mp3"));
+            WordBank.Word card = currentCard();
+            if (card != null) {
+                playWord(card.getWord());
             }
-            wordSound.play();
         }
 
         count = count < 0 ? 0 : count;
-        count = count >= word.length ? word.length-1 : count;
+        count = count >= cards.size() ? Math.max(0, cards.size() - 1) : count;
 
         // 显示单词
-        wordLabel.setText(word[count] + "\n\n");
-        explainLabel.setText(wordExplain[count]);
+        WordBank.Word card = currentCard();
+        wordLabel.setText(card == null ? "" : TextUtil.truncate(card.getWord(), 16) + "\n\n");
+        explainLabel.setText(card == null ? "" : TextUtil.wrap(card.getExplain(), 36, 4));
         // 进度条显示
-        if (count1 <= word.length)
-            progressKnow.setWidth(count1 * (400 / word.length));
+        if (count1 <= cards.size())
+            progressKnow.setWidth(count1 * (400f / Math.max(1, cards.size())));
+    }
+
+    /** 有 sound/<单词>.mp3 就放单词读音, 没有就放默认音效 */
+    private void playWord(String word) {
+        try {
+            wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/" + word.trim().toLowerCase() + ".mp3"));
+        } catch (Exception e) {
+            wordSound = Gdx.audio.newSound(Gdx.files.internal("sound/noSound.mp3"));
+        }
+        wordSound.play();
     }
 
     @Override

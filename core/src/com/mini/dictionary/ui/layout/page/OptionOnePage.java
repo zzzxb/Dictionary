@@ -13,8 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.mini.dictionary.ui.button.ButtonFramework;
 import com.mini.dictionary.ui.layout.page.dao.OptionPageDao;
+import com.mini.dictionary.util.TextUtil;
+import com.mini.dictionary.util.WordBank;
 
-import java.util.Date;
+import java.util.List;
 
 public class OptionOnePage implements OptionPageDao, Disposable {
     private Stage stage;
@@ -27,7 +29,7 @@ public class OptionOnePage implements OptionPageDao, Disposable {
     private TextField searchBox;
     private Label label;
     private Label dailySentenceLabel;
-    private Date date;
+    private String lastQuery; // showMessage 每帧都会被调用, 记一下上次查的词, 没变就不重复算
 
     private ButtonFramework query;
     private ImageTextButton queryButton;
@@ -39,7 +41,6 @@ public class OptionOnePage implements OptionPageDao, Disposable {
 
     @Override
     public void init() {
-        date = new Date(); // 在哪放个日期
         font = new BitmapFont(Gdx.files.internal("font/font18.fnt"),
                 Gdx.files.internal("font/font18.png"),false);
         label = new Label("",new Label.LabelStyle(font,null));
@@ -74,23 +75,40 @@ public class OptionOnePage implements OptionPageDao, Disposable {
         searchBox.setMessageText("请输入需要查询的单词...");
     }
 
+    /** 输入框内容变了(或者点了查询按钮/按了回车)才真去查词库 */
     public void showMessage() {
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ||
-//                Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) ||
-//                queryButton.isChecked() ) {
-//        }
-        if (searchBox.getText() != null || searchBox.getText() != "")
-            if (searchBox.getText().toLowerCase().equals("happy"))
-                label.setText("adj. 高兴的; 愉快的; 开心的;");
-            else if (searchBox.getText().toLowerCase().equals("memory"))
-                label.setText("n. 记忆,记忆力;内存,[计]存储器,回忆;");
-            else if (searchBox.getText().equals("赵鹏"))
-                label.setText("大帅哥");
-            else if (searchBox.getText().equals("慎东海"))
-                label.setText("大丑逼");
-            else
-                label.setText(searchBox.getText());
-        queryButton.setChecked(false);
+        String query = searchBox.getText() == null ? "" : searchBox.getText().trim();
+        boolean clicked = queryButton.isChecked() || Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
+        if (queryButton.isChecked()) {
+            queryButton.setChecked(false);
+        }
+        if (!clicked && query.equals(lastQuery)) {
+            return;
+        }
+        lastQuery = query;
+        label.setText(lookup(query));
+    }
+
+    /** 先精确查, 查不到再给几个"你是不是想找" */
+    private String lookup(String query) {
+        if (query.isEmpty()) {
+            return "";
+        }
+        WordBank.Word word = WordBank.find(query);
+        if (word != null) {
+            return word.getWord() + "\n\n" + TextUtil.wrap(word.getExplain(), 60, 3);
+        }
+        List<WordBank.Word> hits = WordBank.suggest(query, 3);
+        String shortQuery = TextUtil.truncate(query, 16);
+        if (hits.isEmpty()) {
+            return "词库里没有 \"" + shortQuery + "\", 换个拼写试试?";
+        }
+        StringBuilder builder = new StringBuilder("没找到 \"" + shortQuery + "\", 你是不是想找:");
+        for (WordBank.Word hit : hits) {
+            builder.append("\n").append(hit.getWord()).append("   ")
+                    .append(TextUtil.truncate(hit.getBrief(), 20));
+        }
+        return builder.toString();
     }
 
     /** 光标*/

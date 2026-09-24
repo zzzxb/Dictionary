@@ -100,6 +100,107 @@ public final class WordBank {
         return pool.get(RANDOM.nextInt(pool.size()));
     }
 
+    /** 精确查词(忽略大小写和首尾空格), 查不到返回 null */
+    public static Word find(String text) {
+        if (text == null) {
+            return null;
+        }
+        String key = text.trim();
+        if (key.isEmpty()) {
+            return null;
+        }
+        for (Word word : all()) {
+            if (word.getWord().trim().equalsIgnoreCase(key)) {
+                return word;
+            }
+        }
+        return null;
+    }
+
+    /** 查不到时的"你是不是想找": 先按包含匹配, 还是没命中就按编辑距离猜拼错的英文 */
+    public static List<Word> suggest(String keyword, int limit) {
+        if (keyword == null || keyword.trim().isEmpty() || limit <= 0) {
+            return new ArrayList<Word>();
+        }
+        String key = keyword.trim().toLowerCase();
+        List<Word> result = new ArrayList<Word>();
+        for (Word word : all()) {
+            if (word.getWord().toLowerCase().contains(key)) {
+                result.add(word);
+                if (result.size() >= limit) {
+                    return result;
+                }
+            }
+        }
+        for (Word word : all()) {
+            if (word.getExplain().toLowerCase().contains(key) && !result.contains(word)) {
+                result.add(word);
+                if (result.size() >= limit) {
+                    return result;
+                }
+            }
+        }
+        return nearest(key, limit);
+    }
+
+    /** 按编辑距离找拼写最接近的几个词, 比如 memry -> memory */
+    private static List<Word> nearest(String key, int limit) {
+        int allowed = Math.max(1, key.length() / 4);
+        List<Word> candidates = new ArrayList<Word>();
+        List<Integer> distances = new ArrayList<Integer>();
+        for (Word word : all()) {
+            String spell = word.getWord().trim().toLowerCase();
+            if (spell.isEmpty() || Math.abs(spell.length() - key.length()) > allowed) {
+                continue;
+            }
+            int distance = distance(spell, key);
+            if (distance > allowed) {
+                continue;
+            }
+            int at = candidates.size();
+            for (int i = 0; i < distances.size(); i++) {
+                if (distance < distances.get(i)) {
+                    at = i;
+                    break;
+                }
+            }
+            candidates.add(at, word);
+            distances.add(at, distance);
+        }
+        return new ArrayList<Word>(candidates.subList(0, Math.min(limit, candidates.size())));
+    }
+
+    /** 编辑距离(滚动数组版) */
+    private static int distance(String left, String right) {
+        int[] previous = new int[right.length() + 1];
+        int[] current = new int[right.length() + 1];
+        for (int j = 0; j <= right.length(); j++) {
+            previous[j] = j;
+        }
+        for (int i = 1; i <= left.length(); i++) {
+            current[0] = i;
+            for (int j = 1; j <= right.length(); j++) {
+                int cost = left.charAt(i - 1) == right.charAt(j - 1) ? 0 : 1;
+                current[j] = Math.min(Math.min(current[j - 1] + 1, previous[j] + 1), previous[j - 1] + cost);
+            }
+            int[] swap = previous;
+            previous = current;
+            current = swap;
+        }
+        return previous[right.length()];
+    }
+
+    /**
+     * 今天要背的一批单词: 用当天日期当随机种子, 所以同一天抽到的永远是同一批,
+     * 关掉软件再打开进度条还对得上。只从"释义能塞进单词卡"的词里抽。
+     */
+    public static List<Word> dailyCards(int count) {
+        List<Word> pool = new ArrayList<Word>(quizPool());
+        Collections.shuffle(pool, new Random(StudyData.getDaySeed()));
+        int size = Math.max(1, Math.min(count, pool.size()));
+        return new ArrayList<Word>(pool.subList(0, size));
+    }
+
     private static void load() {
         List<Word> list = new ArrayList<Word>();
         try {

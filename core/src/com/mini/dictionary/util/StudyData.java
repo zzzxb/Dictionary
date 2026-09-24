@@ -50,6 +50,11 @@ public final class StudyData {
         return new SimpleDateFormat(DAY_PATTERN, Locale.CHINA).format(new Date());
     }
 
+    /** 今天的日期数字(比如 20260924), 给"每日单词"当随机种子: 同一天抽到同一批词 */
+    public static int getDaySeed() {
+        return Integer.parseInt(today().replace("-", ""));
+    }
+
     private static boolean isYesterday(String day) {
         if (day == null || day.isEmpty()) {
             return false;
